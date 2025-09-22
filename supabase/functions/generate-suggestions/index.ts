@@ -59,45 +59,19 @@ function detectGenericContent(text: string): boolean {
   return false;
 }
 
-function extractConversationContext(conversation: any): string {
-  // Prioriza mensagens parseadas se disponíveis
-  if (conversation.parsed_messages && conversation.parsed_messages.length > 0) {
-    const recentMessages = conversation.parsed_messages
-      .slice(-10) // Últimas 10 mensagens
-      .filter((msg: any) => msg.content && msg.content.length > 3)
-      .map((msg: any) => `${msg.role === 'user' ? 'Você' : 'Match'}: ${msg.content}`)
-      .join('\n');
-    
-    if (recentMessages.trim()) {
-      return recentMessages;
-    }
-  }
-  
-  // Fallback para OCR text limpo
-  return filterTechnicalContext(conversation.ocr_text || '');
-}
-
 function filterTechnicalContext(text: string): string {
-  // Remove caracteres estranhos e limpa o texto
-  let cleaned = text
-    .replace(/[^\w\s\nÀ-ÿ:.,!?()-]/g, ' ')
-    .replace(/\s+/g, ' ')
-    .replace(/\n\s*\n/g, '\n')
-    .trim();
+  let filteredText = text;
   
   // Remove sentences containing technical terms
-  const sentences = cleaned.split(/[.!?]+/);
+  const sentences = text.split(/[.!?]+/);
   const filteredSentences = sentences.filter(sentence => {
     const lowerSentence = sentence.toLowerCase();
-    return !TECHNICAL_TERMS.some(term => lowerSentence.includes(term.toLowerCase())) &&
-           sentence.trim().length > 5 && // Remove sentenças muito curtas
-           !/^\d+[\s.,:-]*$/.test(sentence.trim()); // Remove números soltos
+    return !TECHNICAL_TERMS.some(term => lowerSentence.includes(term.toLowerCase()));
   });
   
-  // Se filtrou muito, retorna com instrução especial
-  if (filteredSentences.length < Math.max(2, sentences.length * 0.3)) {
-    return "[FOCO: Ignore informações técnicas e números. Baseie-se apenas no contexto pessoal/romântico]\n" + 
-           filteredSentences.slice(0, 5).join('. ').trim();
+  // If we filtered out too much, return original but add instruction to ignore tech context
+  if (filteredSentences.length < sentences.length * 0.3) {
+    return text + "\n\n[IGNORAR: Contexto técnico/profissional detectado - focar apenas no aspecto pessoal/romântico da conversa]";
   }
   
   return filteredSentences.join('. ').trim();
@@ -160,8 +134,8 @@ serve(async (req) => {
     const userPrefs = preferences || profile.preferences;
     const timeOfDay = getTimeBasedGreeting();
     
-    // Extract clean conversation context
-    const conversationContext = extractConversationContext(conversation);
+    // Filter technical content from conversation
+    const filteredContext = filterTechnicalContext(conversation.ocr_text || '');
     
     const contextPrompt = `
 Você é o FlertaAI, especialista em conversas românticas brasileiras.
@@ -177,8 +151,8 @@ PREFERÊNCIAS DO USUÁRIO:
 - Ousadia: ${userPrefs.tone.boldness}%
 - Tamanho: ${userPrefs.length}
 
-CONTEXTO DA CONVERSA:
-${conversationContext}
+ÚLTIMAS MENSAGENS:
+${filteredContext}
 
 INSTRUÇÕES CRÍTICAS:
 1. NUNCA use clichês como "oi sumida", "como vai", "tudo bem", "gatinha", "gostosa"
