@@ -1,24 +1,54 @@
 <!doctype html>
-<html lang="en">
+<html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>flerta-ai-br</title>
-    <meta name="description" content="Lovable Generated Project" />
-    <meta name="author" content="Lovable" />
-
-    <meta property="og:title" content="flerta-ai-br" />
-    <meta property="og:description" content="Lovable Generated Project" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>FlertaAI - IA que entende o jeito brasileiro de flertar</title>
+    <meta name="description" content="Conquiste matches com respostas inteligentes usando IA 100% brasileira. Privacidade total, OCR local, contexto cultural brasileiro." />
+    <meta name="author" content="FlertaAI" />
+    <meta name="keywords" content="dating, flerte, tinder, bumble, IA, inteligência artificial, brasil" />
+    
+    <!-- PWA -->
+    <meta name="theme-color" content="#0B1220" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="FlertaAI" />
+    <link rel="manifest" href="/manifest.json" />
+    
+    <!-- Icons -->
+    <link rel="icon" href="/icon-96x96.png" type="image/png" />
+    <link rel="apple-touch-icon" href="/icon-192x192.png" />
+    
+    <!-- Social Meta -->
+    <meta property="og:title" content="FlertaAI - IA que entende o jeito brasileiro de flertar" />
+    <meta property="og:description" content="Conquiste matches com respostas inteligentes usando IA 100% brasileira" />
     <meta property="og:type" content="website" />
-    <meta property="og:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+    <meta property="og:image" content="/screenshot-wide.png" />
+    <meta property="og:url" content="https://flertaai.com" />
+    <meta property="og:locale" content="pt_BR" />
 
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@lovable_dev" />
-    <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+    <meta name="twitter:title" content="FlertaAI - IA que entende o jeito brasileiro de flertar" />
+    <meta name="twitter:description" content="Conquiste matches com respostas inteligentes usando IA 100% brasileira" />
+    <meta name="twitter:image" content="/screenshot-wide.png" />
   </head>
 
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    <script>
+      // Register service worker
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then((registration) => {
+              console.log('FlertaAI SW registered: ', registration);
+            })
+            .catch((registrationError) => {
+              console.log('FlertaAI SW registration failed: ', registrationError);
+            });
+        });
+      }
+    </script>
   </body>
 </html>
