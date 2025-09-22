@@ -100,9 +100,10 @@ const UploadOCR = () => {
 
       await worker.terminate();
       
-      // Combine all OCR results
+      // Combine and clean all OCR results
       const combinedText = results.filter(text => text.trim()).join('\n\n');
-      setEditedText(combinedText);
+      const cleanedText = cleanExtractedText(combinedText);
+      setEditedText(cleanedText);
       setStep('edit');
 
       toast({
@@ -123,18 +124,46 @@ const UploadOCR = () => {
     }
   };
 
+  const cleanExtractedText = (text: string) => {
+    // Remove caracteres estranhos e limpa o texto OCR
+    let cleaned = text
+      .replace(/[^\w\s\nÀ-ÿ:.,!?()-]/g, ' ') // Remove caracteres especiais exceto pontuação básica
+      .replace(/\s+/g, ' ') // Substitui múltiplos espaços por um só
+      .replace(/\n\s*\n/g, '\n') // Remove linhas vazias duplas
+      .trim();
+    
+    // Extrai apenas mensagens que parecem ser de conversa
+    const lines = cleaned.split('\n');
+    const conversationLines: string[] = [];
+    
+    lines.forEach(line => {
+      const trimmed = line.trim();
+      // Filtra linhas que parecem ser mensagens reais (não números, não muito curtas)
+      if (trimmed && 
+          trimmed.length > 2 && 
+          trimmed.length < 300 && 
+          !/^\d+$/.test(trimmed) && // Remove números soltos
+          !/^[.,!?]+$/.test(trimmed) && // Remove pontuação solta
+          !trimmed.match(/^[0-9\s.:,-]+$/) // Remove timestamps/números com pontuação
+      ) {
+        conversationLines.push(trimmed);
+      }
+    });
+    
+    return conversationLines.join('\n');
+  };
+
   const parseConversation = (text: string) => {
-    const lines = text.split('\n').filter(line => line.trim());
+    const cleanedText = cleanExtractedText(text);
+    const lines = cleanedText.split('\n').filter(line => line.trim());
     const messages: any[] = [];
     
     lines.forEach(line => {
       const trimmed = line.trim();
       if (trimmed) {
-        // Simple pattern matching for common dating app formats
-        // This would be enhanced with more sophisticated parsing
+        // Melhor detecção de mensagens do usuário vs match
         const isUserMessage = /^(Você|Eu):/i.test(trimmed) || 
-                            /^\d{2}:\d{2}/.test(trimmed) ||
-                            trimmed.length < 100; // Assume shorter messages are from user
+                            trimmed.length < 50; // Mensagens mais curtas tendem a ser do usuário
         
         messages.push({
           role: isUserMessage ? 'user' : 'match',
