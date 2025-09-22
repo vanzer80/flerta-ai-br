@@ -7,6 +7,7 @@ import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import App from "./pages/App";
 import UploadOCR from "./pages/UploadOCR";
+import Suggestions from "./pages/Suggestions";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -22,6 +23,7 @@ const Main = () => (
           <Route path="/auth" element={<Auth />} />
           <Route path="/app" element={<App />} />
           <Route path="/app/upload" element={<UploadOCR />} />
+          <Route path="/app/suggestions/:conversationId" element={<Suggestions />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
