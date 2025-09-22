@@ -296,15 +296,43 @@ const Suggestions = () => {
           {conversation && (
             <Card className="border-0 bg-surface/50">
               <CardHeader>
-                <CardTitle>Conversa atual</CardTitle>
+                <CardTitle>Prévia da conversa</CardTitle>
+                <p className="text-sm text-muted">
+                  Baseado nas imagens enviadas • {conversation.platform}
+                </p>
               </CardHeader>
               <CardContent>
-                <Textarea
-                  value={conversation.ocr_text || "Nenhum texto extraído"}
-                  readOnly
-                  rows={6}
-                  className="font-mono text-sm bg-bg/50"
-                />
+                <div className="bg-bg/50 rounded-lg p-4 max-h-40 overflow-y-auto">
+                  {conversation.parsed_messages && conversation.parsed_messages.length > 0 ? (
+                    <div className="space-y-3">
+                      {conversation.parsed_messages.slice(-6).map((message: any, index: number) => (
+                        <div
+                          key={index}
+                          className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                        >
+                          <div
+                            className={`max-w-[80%] p-3 rounded-lg text-sm ${
+                              message.role === 'user'
+                                ? 'bg-primary text-white rounded-br-sm'
+                                : 'bg-surface border rounded-bl-sm'
+                            }`}
+                          >
+                            <p>{message.content}</p>
+                          </div>
+                        </div>
+                      ))}
+                      {conversation.parsed_messages.length > 6 && (
+                        <p className="text-xs text-muted text-center">
+                          ... mostrando últimas 6 mensagens
+                        </p>
+                      )}
+                    </div>
+                  ) : (
+                    <p className="text-muted text-center py-4">
+                      Nenhuma mensagem detectada
+                    </p>
+                  )}
+                </div>
               </CardContent>
             </Card>
           )}
