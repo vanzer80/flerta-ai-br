@@ -14,13 +14,404 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      conversation_outcomes: {
+        Row: {
+          conversation_id: string
+          created_at: string
+          id: string
+          match_response: string | null
+          outcome: string
+          response_time_minutes: number | null
+          success_factors: string[] | null
+          suggestion_id: string | null
+        }
+        Insert: {
+          conversation_id: string
+          created_at?: string
+          id?: string
+          match_response?: string | null
+          outcome: string
+          response_time_minutes?: number | null
+          success_factors?: string[] | null
+          suggestion_id?: string | null
+        }
+        Update: {
+          conversation_id?: string
+          created_at?: string
+          id?: string
+          match_response?: string | null
+          outcome?: string
+          response_time_minutes?: number | null
+          success_factors?: string[] | null
+          suggestion_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "conversation_outcomes_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "conversation_outcomes_suggestion_id_fkey"
+            columns: ["suggestion_id"]
+            isOneToOne: false
+            referencedRelation: "suggestions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      conversations: {
+        Row: {
+          created_at: string
+          id: string
+          metadata: Json
+          needs_confirmation: boolean
+          ocr_text: string | null
+          parsed_messages: Json | null
+          platform: string
+          screenshot_url: string | null
+          speaker_confidence: number | null
+          title: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          metadata?: Json
+          needs_confirmation?: boolean
+          ocr_text?: string | null
+          parsed_messages?: Json | null
+          platform: string
+          screenshot_url?: string | null
+          speaker_confidence?: number | null
+          title?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          metadata?: Json
+          needs_confirmation?: boolean
+          ocr_text?: string | null
+          parsed_messages?: Json | null
+          platform?: string
+          screenshot_url?: string | null
+          speaker_confidence?: number | null
+          title?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      image_verifications: {
+        Row: {
+          created_at: string
+          id: string
+          image_url: string | null
+          perceptual_hash: string | null
+          reverse_search_results: Json | null
+          risk_factors: string[] | null
+          risk_score: number | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          perceptual_hash?: string | null
+          reverse_search_results?: Json | null
+          risk_factors?: string[] | null
+          risk_score?: number | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          perceptual_hash?: string | null
+          reverse_search_results?: Json | null
+          risk_factors?: string[] | null
+          risk_score?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      privacy_logs: {
+        Row: {
+          action: string
+          created_at: string
+          entity_id: string | null
+          entity_type: string | null
+          id: string
+          ip_address: unknown | null
+          metadata: Json
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          entity_id?: string | null
+          entity_type?: string | null
+          id?: string
+          ip_address?: unknown | null
+          metadata?: Json
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          entity_id?: string | null
+          entity_type?: string | null
+          id?: string
+          ip_address?: unknown | null
+          metadata?: Json
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          email: string
+          id: string
+          locale: string
+          name: string | null
+          onboarding_completed: boolean
+          preferences: Json
+          timezone: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          email: string
+          id?: string
+          locale?: string
+          name?: string | null
+          onboarding_completed?: boolean
+          preferences?: Json
+          timezone?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+          locale?: string
+          name?: string | null
+          onboarding_completed?: boolean
+          preferences?: Json
+          timezone?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      rate_limits: {
+        Row: {
+          created_at: string
+          endpoint: string
+          id: string
+          requests_count: number
+          user_id: string
+          window_start: string
+        }
+        Insert: {
+          created_at?: string
+          endpoint: string
+          id?: string
+          requests_count?: number
+          user_id: string
+          window_start?: string
+        }
+        Update: {
+          created_at?: string
+          endpoint?: string
+          id?: string
+          requests_count?: number
+          user_id?: string
+          window_start?: string
+        }
+        Relationships: []
+      }
+      subscriptions: {
+        Row: {
+          created_at: string
+          current_period_end: string | null
+          current_period_start: string | null
+          features: Json
+          id: string
+          plan: string
+          status: string
+          stripe_customer_id: string | null
+          stripe_subscription_id: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          current_period_end?: string | null
+          current_period_start?: string | null
+          features?: Json
+          id?: string
+          plan?: string
+          status?: string
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          current_period_end?: string | null
+          current_period_start?: string | null
+          features?: Json
+          id?: string
+          plan?: string
+          status?: string
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      suggestions: {
+        Row: {
+          accepted: boolean | null
+          alternatives: string[] | null
+          conversation_id: string
+          copied_at: string | null
+          created_at: string
+          cultural_context: Json | null
+          feedback_score: number | null
+          id: string
+          reasoning: string[] | null
+          style: Json
+          suggestion_text: string
+          timing_appropriate: boolean
+        }
+        Insert: {
+          accepted?: boolean | null
+          alternatives?: string[] | null
+          conversation_id: string
+          copied_at?: string | null
+          created_at?: string
+          cultural_context?: Json | null
+          feedback_score?: number | null
+          id?: string
+          reasoning?: string[] | null
+          style: Json
+          suggestion_text: string
+          timing_appropriate?: boolean
+        }
+        Update: {
+          accepted?: boolean | null
+          alternatives?: string[] | null
+          conversation_id?: string
+          copied_at?: string | null
+          created_at?: string
+          cultural_context?: Json | null
+          feedback_score?: number | null
+          id?: string
+          reasoning?: string[] | null
+          style?: Json
+          suggestion_text?: string
+          timing_appropriate?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "suggestions_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      voice_notes: {
+        Row: {
+          audio_url: string | null
+          created_at: string
+          duration_seconds: number | null
+          id: string
+          language: string
+          transcript: string | null
+          tts_url: string | null
+          user_id: string
+        }
+        Insert: {
+          audio_url?: string | null
+          created_at?: string
+          duration_seconds?: number | null
+          id?: string
+          language?: string
+          transcript?: string | null
+          tts_url?: string | null
+          user_id: string
+        }
+        Update: {
+          audio_url?: string | null
+          created_at?: string
+          duration_seconds?: number | null
+          id?: string
+          language?: string
+          transcript?: string | null
+          tts_url?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      cleanup_old_data: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      get_user_features: {
+        Args: { user_uuid: string }
+        Returns: Json
+      }
+      gtrgm_compress: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      gtrgm_decompress: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      gtrgm_in: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      gtrgm_options: {
+        Args: { "": unknown }
+        Returns: undefined
+      }
+      gtrgm_out: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      set_limit: {
+        Args: { "": number }
+        Returns: number
+      }
+      show_limit: {
+        Args: Record<PropertyKey, never>
+        Returns: number
+      }
+      show_trgm: {
+        Args: { "": string }
+        Returns: string[]
+      }
     }
     Enums: {
       [_ in never]: never
