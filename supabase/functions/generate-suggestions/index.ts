@@ -18,9 +18,19 @@ const BLOCKED_PATTERNS = [
   /\be\s+aí\b/i,
 ];
 
+// Technical terms to filter out - don't use in romantic suggestions
+const TECHNICAL_TERMS = [
+  'terraform', 'deploy', 'código', 'codigos', 'projeto', 'implementar', 'implementando',
+  'javascript', 'python', 'react', 'node', 'api', 'backend', 'frontend', 'database',
+  'git', 'github', 'docker', 'kubernetes', 'aws', 'cloud', 'devops', 'ci/cd',
+  'programming', 'developer', 'tech', 'software', 'hardware', 'framework',
+  'biblioteca', 'library', 'function', 'variable', 'array', 'object', 'class',
+  'integration', 'integração', 'continuous', 'contínua', 'pipeline', 'repository'
+];
+
 const ANTI_GENERIC_PHRASES = [
   "copy-paste pickup lines",
-  "clichê responses",
+  "clichê responses", 
   "generic openers",
   "boring conversations",
   "predictable messages"
@@ -37,7 +47,34 @@ function detectGenericContent(text: string): boolean {
     if (text.toLowerCase().includes(phrase.toLowerCase())) return true;
   }
   
+  // Check for technical terms that shouldn't appear in romantic suggestions
+  const lowerText = text.toLowerCase();
+  for (const term of TECHNICAL_TERMS) {
+    if (lowerText.includes(term.toLowerCase())) {
+      console.log(`Blocked suggestion with technical term: ${term}`);
+      return true;
+    }
+  }
+  
   return false;
+}
+
+function filterTechnicalContext(text: string): string {
+  let filteredText = text;
+  
+  // Remove sentences containing technical terms
+  const sentences = text.split(/[.!?]+/);
+  const filteredSentences = sentences.filter(sentence => {
+    const lowerSentence = sentence.toLowerCase();
+    return !TECHNICAL_TERMS.some(term => lowerSentence.includes(term.toLowerCase()));
+  });
+  
+  // If we filtered out too much, return original but add instruction to ignore tech context
+  if (filteredSentences.length < sentences.length * 0.3) {
+    return text + "\n\n[IGNORAR: Contexto técnico/profissional detectado - focar apenas no aspecto pessoal/romântico da conversa]";
+  }
+  
+  return filteredSentences.join('. ').trim();
 }
 
 function getTimeBasedGreeting() {
@@ -97,6 +134,9 @@ serve(async (req) => {
     const userPrefs = preferences || profile.preferences;
     const timeOfDay = getTimeBasedGreeting();
     
+    // Filter technical content from conversation
+    const filteredContext = filterTechnicalContext(conversation.ocr_text || '');
+    
     const contextPrompt = `
 Você é o FlertaAI, especialista em conversas românticas brasileiras.
 
@@ -112,17 +152,20 @@ PREFERÊNCIAS DO USUÁRIO:
 - Tamanho: ${userPrefs.length}
 
 ÚLTIMAS MENSAGENS:
-${conversation.ocr_text}
+${filteredContext}
 
 INSTRUÇÕES CRÍTICAS:
 1. NUNCA use clichês como "oi sumida", "como vai", "tudo bem", "gatinha", "gostosa"
 2. Seja autenticamente brasileiro - use gírias naturais, referências culturais
 3. Adapte ao horário (manhã/tarde/noite/madrugada)
-4. Responda com base no contexto real da conversa
-5. Se humor alto: seja divertido mas não forçado
-6. Se sutileza alta: seja indireta e elegante
-7. Se ousadia alta: seja confiante mas respeitoso
-8. Considere o tom da plataforma (Tinder = casual, WhatsApp = pessoal)
+4. Responda com base APENAS no contexto romântico/pessoal da conversa
+5. IGNORE completamente qualquer conteúdo técnico, profissional ou sobre programação
+6. NÃO faça referências a: código, programação, tecnologia, trabalho, projetos técnicos
+7. Foque apenas nos aspectos humanos, emocionais e de conexão pessoal
+8. Se humor alto: seja divertido mas não forçado
+9. Se sutileza alta: seja indireta e elegante
+10. Se ousadia alta: seja confiante mas respeitoso
+11. Considere o tom da plataforma (Tinder = casual, WhatsApp = pessoal)
 
 ${coachMode ? `
 MODO COACH ATIVADO:
